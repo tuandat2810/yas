@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties({YasConfig.class, CorsConfig.class})
 public class MediaApplication {
 
-    // 启动类 phamhoanggiang <3 conggiap
+    // 启动类 phamhoanggiang <3 conggiap 2024-06-17 23:59:59
     public static void main(String[] args) {
         SpringApplication.run(MediaApplication.class, args);
     }
