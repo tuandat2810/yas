@@ -16,7 +16,7 @@ pipeline {
                         dir('media') {
                             echo "Building Media Service..."
                             // Lệnh build Spring Boot (tùy thuộc dùng Maven hay Gradle)
-                            bat './gradlew clean build -x test' 
+                            bat 'gradlew.bat clean build -x test'
                         }
                     }
                 }
@@ -25,7 +25,7 @@ pipeline {
                         dir('media') {
                             echo "Testing Media Service..."
                             // Chạy unit test và generate báo cáo độ phủ (JaCoCo)
-                            bat './gradlew test jacocoTestReport'
+                            bat 'gradlew.bat test jacocoTestReport'
                         }
                     }
                     post {
@@ -54,14 +54,14 @@ pipeline {
                 stage('Build Product') {
                     steps {
                         dir('product') {
-                            bat './gradlew clean build -x test'
+                            bat 'gradlew.bat clean build -x test'
                         }
                     }
                 }
                 stage('Test Product') {
                     steps {
                         dir('product') {
-                            bat './gradlew test jacocoTestReport'
+                            bat 'gradlew.bat test jacocoTestReport'
                         }
                     }
                     post {
