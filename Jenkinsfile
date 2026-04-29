@@ -1,6 +1,12 @@
 pipeline {
     agent any // Hoặc trỏ tới Docker/Node tùy cấu hình của bạn
     
+    environment {
+        // Thiết lập biến môi trường JAVA_HOME trực tiếp cho Jenkins
+        // Lưu ý: Đảm bảo đường dẫn này khớp chính xác với thư mục cài Java trên máy bạn
+        JAVA_HOME = "C:\\Program Files\\Java\\jdk-23"
+    }
+    
     stages {
         // ==========================================
         // PIPELINE CHO MEDIA SERVICE
