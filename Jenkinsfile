@@ -1,23 +1,81 @@
 pipeline {
-    agent any
-
+    agent any // Hoặc trỏ tới Docker/Node tùy cấu hình của bạn
+    
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
+        // ==========================================
+        // PIPELINE CHO MEDIA SERVICE
+        // ==========================================
+        stage('Media-Service') {
+            when {
+                // Chỉ chạy nếu có file thay đổi trong thư mục media/
+                changeset "media/**" 
+            }
+            stages {
+                stage('Build Media') {
+                    steps {
+                        dir('media') {
+                            echo "Building Media Service..."
+                            // Lệnh build Spring Boot (tùy thuộc dùng Maven hay Gradle)
+                            sh './gradlew clean build -x test' 
+                        }
+                    }
+                }
+                stage('Test Media') {
+                    steps {
+                        dir('media') {
+                            echo "Testing Media Service..."
+                            // Chạy unit test và generate báo cáo độ phủ (JaCoCo)
+                            sh './gradlew test jacocoTestReport'
+                        }
+                    }
+                    post {
+                        always {
+                            // Upload test result [cite: 26]
+                            junit 'media/build/test-results/test/*.xml'
+                            
+                            // Upload độ phủ code (Yêu cầu cài JaCoCo plugin trên Jenkins) [cite: 26]
+                            jacoco execPattern: 'media/build/jacoco/test.exec', 
+                                   classPattern: 'media/build/classes', 
+                                   sourcePattern: 'media/src/main/java'
+                        }
+                    }
+                }
             }
         }
 
-        stage('Test') {
-            steps {
-                sh 'echo Running tests on branch: $BRANCH_NAME'
+        // ==========================================
+        // PIPELINE CHO PRODUCT SERVICE
+        // ==========================================
+        stage('Product-Service') {
+            when {
+                changeset "product/**"
+            }
+            stages {
+                stage('Build Product') {
+                    steps {
+                        dir('product') {
+                            sh './gradlew clean build -x test'
+                        }
+                    }
+                }
+                stage('Test Product') {
+                    steps {
+                        dir('product') {
+                            sh './gradlew test jacocoTestReport'
+                        }
+                    }
+                    post {
+                        always {
+                            junit 'product/build/test-results/test/*.xml'
+                            jacoco execPattern: 'product/build/jacoco/test.exec', 
+                                   classPattern: 'product/build/classes', 
+                                   sourcePattern: 'product/src/main/java'
+                        }
+                    }
+                }
             }
         }
-
-        stage('Build') {
-            steps {
-                sh 'echo Building on branch: $BRANCH_NAME'
-            }
-        }
+        
+        // Bạn copy block stage tương tự cho Cart, Order, v.v. [cite: 31]
     }
 }
