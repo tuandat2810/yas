@@ -16,4 +16,6 @@ public class MediaApplication {
     }
 
     // phamhoanggiang <3 conggiap 2024-06-17 23:59:59
+
+    // 其他配置类、Bean定义等可以放在这里
 }
