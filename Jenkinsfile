@@ -1,9 +1,8 @@
 pipeline {
-    agent any // Hoặc trỏ tới Docker/Node tùy cấu hình của bạn
+    agent any 
     
     environment {
-        // Thiết lập biến môi trường JAVA_HOME trực tiếp cho Jenkins
-        // Lưu ý: Đảm bảo đường dẫn này khớp chính xác với thư mục cài Java trên máy bạn
+        // Giữ nguyên đường dẫn Java của bạn
         JAVA_HOME = "C:\\Program Files\\Java\\jdk-23"
     }
     
@@ -19,8 +18,11 @@ pipeline {
                 stage('Build Media') {
                     steps {
                         dir('media') {
+                            echo "Installing Common Library first..."
+                            // MƯỢN wrapper của media để build và install common-library từ thư mục gốc
+                            bat 'mvnw.cmd -f ../pom.xml clean install -pl common-library -am -DskipTests'
+                            
                             echo "Building Media Service..."
-                            // Gọi trực tiếp file mvnw.cmd nằm trong thư mục media
                             bat 'mvnw.cmd clean package -DskipTests'
                         }
                     }
@@ -29,13 +31,11 @@ pipeline {
                     steps {
                         dir('media') {
                             echo "Testing Media Service..."
-                            // Gọi trực tiếp file mvnw.cmd nằm trong thư mục media
                             bat 'mvnw.cmd test'
                         }
                     }
                     post {
                         always {
-                            // Cập nhật đường dẫn lưu report sang chuẩn target/ của Maven
                             junit 'media/target/surefire-reports/*.xml'
                             
                             jacoco execPattern: 'media/target/jacoco.exec', 
@@ -46,9 +46,5 @@ pipeline {
                 }
             }
         }
-
-        // ==========================================
-        // Bạn copy block stage tương tự cho Product, Cart, Order, v.v.
-        // ==========================================
     }
 }
