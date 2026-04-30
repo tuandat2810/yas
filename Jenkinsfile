@@ -10,6 +10,7 @@ pipeline {
         // ==========================================
         // PIPELINE CHO MEDIA SERVICE
         // ==========================================
+
         stage('Media-Service') {
             when {
                 changeset "media/**" 
@@ -19,10 +20,10 @@ pipeline {
                     steps {
                         dir('media') {
                             echo "Installing Common Library first..."
-                            bat 'mvnw.cmd -f ../pom.xml clean install -pl common-library -am -DskipTests'
+                            // Bổ sung cờ -Drevision vào lệnh install để Jenkins lưu đúng tên phiên bản
+                            bat 'mvnw.cmd -f ../pom.xml clean install -pl common-library -am -DskipTests -Drevision=1.0-SNAPSHOT'
                             
                             echo "Building Media Service..."
-                            // Thêm tham số -Drevision để Maven nhận diện được phiên bản
                             bat 'mvnw.cmd clean package -U -DskipTests -Drevision=1.0-SNAPSHOT'
                         }
                     }
@@ -31,7 +32,7 @@ pipeline {
                     steps {
                         dir('media') {
                             echo "Testing Media Service..."
-                            // Thêm tham số -Drevision tương tự cho quá trình test
+                            // Lệnh test cũng phải có cờ này
                             bat 'mvnw.cmd test -Drevision=1.0-SNAPSHOT'
                         }
                     }
