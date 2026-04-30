@@ -23,7 +23,7 @@ pipeline {
                             
                             echo "Building Media Service..."
                             // Thêm tham số -Drevision để Maven nhận diện được phiên bản
-                            bat 'mvnw.cmd clean package -DskipTests -Drevision=1.0-SNAPSHOT'
+                            bat 'mvnw.cmd clean package -U -DskipTests -Drevision=1.0-SNAPSHOT'
                         }
                     }
                 }
