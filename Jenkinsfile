@@ -19,11 +19,11 @@ pipeline {
                     steps {
                         dir('media') {
                             echo "Installing Common Library first..."
-                            // MƯỢN wrapper của media để build và install common-library từ thư mục gốc
                             bat 'mvnw.cmd -f ../pom.xml clean install -pl common-library -am -DskipTests'
                             
                             echo "Building Media Service..."
-                            bat 'mvnw.cmd clean package -DskipTests'
+                            // Thêm tham số -Drevision để Maven nhận diện được phiên bản
+                            bat 'mvnw.cmd clean package -DskipTests -Drevision=1.0-SNAPSHOT'
                         }
                     }
                 }
@@ -31,13 +31,13 @@ pipeline {
                     steps {
                         dir('media') {
                             echo "Testing Media Service..."
-                            bat 'mvnw.cmd test'
+                            // Thêm tham số -Drevision tương tự cho quá trình test
+                            bat 'mvnw.cmd test -Drevision=1.0-SNAPSHOT'
                         }
                     }
                     post {
                         always {
                             junit 'media/target/surefire-reports/*.xml'
-                            
                             jacoco execPattern: 'media/target/jacoco.exec', 
                                    classPattern: 'media/target/classes', 
                                    sourcePattern: 'media/src/main/java'
